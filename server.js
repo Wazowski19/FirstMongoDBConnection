@@ -1,6 +1,9 @@
 import http from 'http'
 import api from './api/api.js'
-import serverConfig from './api/config/serverConfig.js';
+import config from './api/config/serverConfig.js';
+import dbInitialize from './api/config/database.js';
+
+const {server: serverConfig} = config
 
 const server = http.createServer(api);
 
@@ -29,4 +32,5 @@ const onListen = () =>{
 server.on('listening', onListen)
 server.on('error', onError)
 
+dbInitialize()
 server.listen(serverConfig.PORT)
