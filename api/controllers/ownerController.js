@@ -13,7 +13,7 @@ const createOwner = async(req, res) =>{
     try {
         const newOwner = await Owner.create(owner)
         return res.json({
-            msg: 'Mascota creada satisfactoreiamente',
+            msg: 'Owner creado satisfactoriamente',
             owner: newOwner
         })
         
@@ -26,4 +26,39 @@ const createOwner = async(req, res) =>{
     }
 }
 
-export {createOwner}
+const getOwner = async (req, res) =>{
+
+    try {
+        const owners = await Owner.find();
+        return res.json({
+            msg: 'Usuarios encontrados',
+            data: owners
+        })
+    } catch (error) {
+        return res.status(500).json({
+            msg: 'Ha ocurrido un error al consultar los dueños'
+        })
+    }
+}
+
+const getOwnerByIdWithPets = async (req, res) =>{
+    const {id} = req.params;
+
+    try {
+        const owner = await Owner.findById(id).populate('mascotas');
+        if(!owner){
+            return res.status(404).json({
+                msg: `Dueño no encontrado con id ${id}`
+            });
+        }
+
+        return res.json({
+            msg: 'Dueño encontrado',
+            data: owner
+        })
+    } catch (error) {
+        
+    }
+}
+
+export {createOwner, getOwner, getOwnerByIdWithPets}
