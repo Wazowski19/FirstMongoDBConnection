@@ -1,19 +1,32 @@
 import Pet from '../models/pet.js'
-
+import Owner from '../models/owner.js'
 
 const createPet = async(req, res) =>{
-    const {pet} = req.body
+    const {pet, ownerId} = req.body
 
-    if(!pet){
+    if(!pet || !ownerId){
         return res.status(400).json({
-            msg: "Falta informacion en ell body, missing pet"
+            msg: "Falta informacion en el body, missing pet or ownerID"
         })
     }
 
     try {
+        const owner = await Owner.findById(ownerId);
+
+        if(!owner){
+            return res.status(404).json({
+                msg: 'Dueño no encontrado',
+            })
+        }
+
         const newPet = await Pet.create(pet)
+        
+        owner.mascotas.push(newPet.id)
+
+        await owner.save();
+
         return res.json({
-            msg: 'Mascota creada satisfactoreiamente',
+            msg: `Mascota creada satisfactoreiamente para el usuario ${owner.nombre}`,
             pet: newPet
         })
         
